@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -21,6 +22,8 @@ import com.facepp.error.FaceppParseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int PICK_PIC2=0x111;
     private static final int MSG_SUCCESS =0x112 ;
     private static final int MSG_ERROR = 0x113;
+    private static final int TAKE_PHOTO=1;
     private String  mCurImgPath;
     private String  mCurImgPath2;
     private Button mChoose;
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Bitmap mPhotoImg;
     private TextView mSimil;
     private  MyHandler mHandler;
+    private  Uri imageUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,12 +76,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.id_choose1:
-                Intent intent=new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent,PICK_PIC);
+//                Intent intent=new Intent(Intent.ACTION_PICK);
+//                intent.setType("image/*");
+//                startActivityForResult(intent,PICK_PIC);
+                getFacePhoto();
                 break;
             case R.id.id_choose2:
-                 intent=new Intent(Intent.ACTION_PICK);
+                Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
                 startActivityForResult(intent,PICK_PIC2);
                 break;
@@ -100,6 +106,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
         }
+    }
+
+    private void getFacePhoto() {
+        File outputImage=new File(Environment.getExternalStorageDirectory(),"tempImage.jpg");
+        try{
+            if (outputImage.exists()){
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        imageUri=Uri.fromFile(outputImage);
+        Intent intent=new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+        startActivityForResult(intent,TAKE_PHOTO);
     }
 
     @Override
