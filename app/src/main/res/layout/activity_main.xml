@@ -12,9 +12,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="打开"
+        android:text="获取原始人脸"
         android:id="@+id/id_choose1"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParent="true"
         android:layout_alignParentBottom="true"/>
 
     <Button
