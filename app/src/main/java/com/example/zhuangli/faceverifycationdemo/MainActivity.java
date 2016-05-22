@@ -1,7 +1,6 @@
 package com.example.zhuangli.faceverifycationdemo;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -23,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int MSG_SUCCESS =0x112 ;
     private static final int MSG_ERROR = 0x113;
     private static final int TAKE_PHOTO=1;
+   private static final int  CROP_PHOTO=2;
     private String  mCurImgPath;
     private String  mCurImgPath2;
     private Button mChoose;
@@ -126,28 +127,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==PICK_PIC){
-            if(data!=null){
-                Uri uri=data.getData();
-                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                cursor.moveToFirst();
-                int columnId = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                mCurImgPath= cursor.getString(columnId);
-                cursor.close();
-                resizePhoto();
-               mPhoto.setImageBitmap(mPhotoImg);
-            }
-        }else if (requestCode==PICK_PIC2){
-            if(data!=null){
-                Uri uri=data.getData();
-                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                cursor.moveToFirst();
-                int columnId = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                mCurImgPath2= cursor.getString(columnId);
-                cursor.close();
-                resizePhoto();
-                mPhoto2.setImageBitmap(mPhotoImg);
+        if(requestCode==TAKE_PHOTO){
+            Intent intent=new Intent("com.android.camera.action.CROP");
+            intent.setDataAndType(imageUri,"image/*");
+            intent.putExtra("scale",true);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+
+            startActivityForResult(intent,CROP_PHOTO);
+
+        }else if (requestCode==CROP_PHOTO){
+
+        try{
+            Bitmap bitmap=BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+           // resizePhoto();
+            
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
         }
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
