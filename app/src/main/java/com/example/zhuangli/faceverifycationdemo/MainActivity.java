@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try{
             Bitmap bitmap=BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
            // resizePhoto();
-            
+
         }catch (FileNotFoundException e){
             e.printStackTrace();
         }
